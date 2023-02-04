@@ -33,11 +33,6 @@ from django.apps import AppConfig
 #         pass
 
 
-
-
-
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -51,7 +46,8 @@ SECRET_KEY = 'django-insecure-f%ul(tjkh*n$%m5g3#xv3l*lz!l)%j-zzv6s6bc(#avu-vgh5k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# musaib: Added to allow connection requests
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -137,6 +133,8 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "http://10.0.2.2:8000",
+    "http://192.168.29.158:8000",
 ]
 
 # Password validation
