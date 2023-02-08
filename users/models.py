@@ -65,7 +65,7 @@ class Patient(models.Model):
         super(Patient, self).save(*args, **kwargs)
 
     def __str__(self):
-         return self.patient_id
+         return self.user.name
 
 
 class Staff(models.Model):

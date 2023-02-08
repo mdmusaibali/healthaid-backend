@@ -1,13 +1,18 @@
+from sqlite3 import IntegrityError
+from rest_framework.parsers import JSONParser
 from rest_framework import generics, viewsets
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate, login
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework.permissions import IsAuthenticated
 from .models import Patient, User, Staff
 from .serializers import PatientSerializer, UserSerializer, StaffSerializer
-from .permissions import IsSuperAdmin
+from .permissions import IsSuperAdmin, IsStaff
+
 
 
 class PatientSignupView(generics.CreateAPIView):
@@ -15,16 +20,17 @@ class PatientSignupView(generics.CreateAPIView):
     serializer_class = PatientSerializer
 
     def perform_create(self, serializer):
-        user_serializer = UserSerializer(data=self.request.data['user'])
+        user_data = self.request.data.pop('user')
+        user_serializer = UserSerializer(data=user_data)
         if user_serializer.is_valid(raise_exception=True):
             user = user_serializer.save()
             user.is_patient = True
             user.save()
-            raw_password = user.password
-            user.set_password(raw_password)
-            user.save()
             self.request.data['user'] = user.pk
-            patient = serializer.save()
+            patient = serializer.save(user = user)
+
+
+
             # login(self.request, user) #user logged in after patient is created
 
 # creating staff by superadmin
@@ -99,3 +105,69 @@ class SuperadminLoginView(APIView):
             return Response({"refresh": str(refresh), "access": str(refresh.access_token)}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# check whether the token is expired or not
+@api_view(['GET'])
+def check_token(request):
+    try:
+        token = request.headers.get('Authorization').split(' ')[1]
+        AccessToken(token)
+    except TokenError:
+        return Response({"error": "Token has been expired"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    return Response({"message": "Token is valid"}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsStaff])
+def add_patient(request):
+    user_serializer = UserSerializer(data=request.data)
+    if user_serializer.is_valid():
+        user = user_serializer.save()
+        patient_serializer = PatientSerializer(data=request.data)
+        if patient_serializer.is_valid():
+            patient = patient_serializer.save(user=user)
+            return Response(patient_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(patient_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
+
+class CreatePatientView(generics.CreateAPIView):
+    parser_classes = [JSONParser]
+    permission_classes = (IsStaff,)
+    queryset = Patient.objects.all()
+    serializer_class = PatientSerializer
+
+    def perform_create(self, serializer):
+        user_data = self.request.data.pop('user')
+        user_serializer = UserSerializer(data=user_data)
+        if user_serializer.is_valid(raise_exception=True):
+            user = user_serializer.save()
+            user.is_patient = True
+            user.save()
+            self.request.data['user'] = user.pk
+            patient = serializer.save(user = user)
+
+#  get all patients for staff
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsStaff])
+def get_all_patients(request):
+    if not request.user.is_staff:
+        return Response({"error": "Only staff members can access this information."}, status=status.HTTP_401_UNAUTHORIZED)
+
+    patients = Patient.objects.all()
+    serializer = PatientSerializer(patients, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# get all staff by superadmin
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsSuperAdmin])
+def get_all_staff(request):
+    if not request.user.is_superadmin:
+        return Response({"error": "Only SuperAdmin can access this information."}, status=status.HTTP_401_UNAUTHORIZED)
+
+    staff = Staff.objects.all()
+    serializer = StaffSerializer(staff, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
