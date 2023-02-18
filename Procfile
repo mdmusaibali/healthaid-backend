@@ -1,0 +1,1 @@
+web: gunicorn healthaid.wsgi --log-file -

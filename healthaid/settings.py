@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 from django.apps import AppConfig
+import os
 
 # class MyAppConfig(AppConfig):
 #     name = 'myapp'
@@ -132,6 +133,7 @@ SIMPLE_JWT = {
 #  connecting with front end
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
+    "http://localhost:8080",
     "http://127.0.0.1:8000",
     "http://10.0.2.2:8000",
     "http://192.168.29.158:8000",
@@ -173,6 +175,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 AUTH_USER_MODEL = "users.User"
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static")
+]
 
 
 # Default primary key field type
