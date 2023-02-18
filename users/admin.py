@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from users.models import User, Staff, Patient
+from django import forms
 
 class UserAdmin(UserAdmin):
     list_display = ('email', 'name', 'is_staff', 'is_superadmin', 'is_patient')
@@ -20,10 +21,19 @@ class UserAdmin(UserAdmin):
     ordering = ('email',)
     filter_horizontal = ()
 
-
+class PatientForm(forms.ModelForm):
+    class Meta:
+        model = Patient
+        exclude = ('patient_id',)
 
 # Register your models here.
+@admin.register(Patient)
+class PatientAdmin(admin.ModelAdmin):
+    # model = Patient
+    form = PatientForm
+
 
 admin.site.register(User)
 admin.site.register(Staff)
-admin.site.register(Patient)
+
+

@@ -17,12 +17,12 @@ class UserSerializer(serializers.ModelSerializer):
         
 
 class PatientSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    # user = UserSerializer()
     # user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
         model = Patient
-        fields = ('patient_id', 'user', 'address', 'date_of_birth', 'sex', 'phone_number', 'aadhar_number', 'picture')
+        fields = ('patient_id','name', 'address', 'date_of_birth', 'sex', 'phone_number', 'aadhar_number', 'picture')
         read_only_fields = ('patient_id',)
         
 

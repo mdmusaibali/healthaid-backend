@@ -45,13 +45,13 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['name']
 
 class Patient(models.Model):
-    user = models.OneToOneField(User, related_name = "Patient", on_delete=models.CASCADE, primary_key=True)
     SEX_CHOICES = [
         ('male', 'Male'),
         ('female', 'Female'),
         ('other', 'Other'),
     ]
     patient_id = models.CharField(max_length=5, unique=True)
+    name = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
     date_of_birth = models.DateField()
     sex = models.CharField(max_length=6, choices=SEX_CHOICES)
@@ -65,7 +65,7 @@ class Patient(models.Model):
         super(Patient, self).save(*args, **kwargs)
 
     def __str__(self):
-         return self.user.name
+         return self.name
 
 
 class Staff(models.Model):

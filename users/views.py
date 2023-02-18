@@ -14,20 +14,14 @@ from .serializers import PatientSerializer, UserSerializer, StaffSerializer
 from .permissions import IsSuperAdmin, IsStaff
 
 
-
+# this endpoint is used to import bulk data to the database
 class PatientSignupView(generics.CreateAPIView):
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
 
     def perform_create(self, serializer):
-        user_data = self.request.data.pop('user')
-        user_serializer = UserSerializer(data=user_data)
-        if user_serializer.is_valid(raise_exception=True):
-            user = user_serializer.save()
-            user.is_patient = True
-            user.save()
-            self.request.data['user'] = user.pk
-            patient = serializer.save(user = user)
+        
+        patient = serializer.save()
 
 
 
@@ -140,14 +134,8 @@ class CreatePatientView(generics.CreateAPIView):
     serializer_class = PatientSerializer
 
     def perform_create(self, serializer):
-        user_data = self.request.data.pop('user')
-        user_serializer = UserSerializer(data=user_data)
-        if user_serializer.is_valid(raise_exception=True):
-            user = user_serializer.save()
-            user.is_patient = True
-            user.save()
-            self.request.data['user'] = user.pk
-            patient = serializer.save(user = user)
+        
+        patient = serializer.save()
 
 #  get all patients for staff
 @api_view(['GET'])
