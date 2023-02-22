@@ -14,18 +14,7 @@ from .serializers import PatientSerializer, UserSerializer, StaffSerializer
 from .permissions import IsSuperAdmin, IsStaff
 
 
-# this endpoint is used to import bulk data to the database
-class PatientSignupView(generics.CreateAPIView):
-    queryset = Patient.objects.all()
-    serializer_class = PatientSerializer
 
-    def perform_create(self, serializer):
-        
-        patient = serializer.save()
-
-
-
-            # login(self.request, user) #user logged in after patient is created
 
 # creating staff by superadmin
 class CreateStaffView(APIView):
@@ -159,3 +148,33 @@ def get_all_staff(request):
     staff = Staff.objects.all()
     serializer = StaffSerializer(staff, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+# delete Staff by ID View
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsSuperAdmin])
+def delete_staff(request, user_id):
+    try:
+        staff = Staff.objects.get(user_id=user_id)
+    except Staff.DoesNotExist:
+        return Response({"error": "Staff not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    staff.delete()
+    return Response({"message": "Staff deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+
+
+# delete patient by patient_id view
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsStaff])
+def delete_patient(request, patient_id):
+    if not request.user.is_staff:
+        return Response({"error": "Only staff can delete patients."}, status=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        patient = Patient.objects.get(patient_id=patient_id)
+    except Patient.DoesNotExist:
+        return Response({"error": "Patient not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    patient.delete()
+
+    return Response({"message": "Patient deleted successfully."}, status=status.HTTP_200_OK)

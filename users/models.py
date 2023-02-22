@@ -55,8 +55,8 @@ class Patient(models.Model):
     address = models.CharField(max_length=255)
     date_of_birth = models.DateField()
     sex = models.CharField(max_length=6, choices=SEX_CHOICES)
-    phone_number = models.CharField(max_length=15)
-    aadhar_number = models.CharField(max_length=12)
+    phone_number = models.CharField(max_length=15, unique=True)
+    aadhar_number = models.CharField(max_length=12, unique=True)
     picture = models.ImageField(upload_to='patient_pictures/', null = True)
     
     def save(self, *args, **kwargs):
