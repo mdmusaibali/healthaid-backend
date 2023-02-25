@@ -50,7 +50,7 @@ class Patient(models.Model):
         ('female', 'Female'),
         ('other', 'Other'),
     ]
-    patient_id = models.CharField(max_length=5, unique=True)
+    patient_id = models.CharField(primary_key=True,max_length=5, unique=True)
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
     date_of_birth = models.DateField()
@@ -65,7 +65,7 @@ class Patient(models.Model):
         super(Patient, self).save(*args, **kwargs)
 
     def __str__(self):
-         return self.name
+         return self.patient_id
 
 
 class Staff(models.Model):

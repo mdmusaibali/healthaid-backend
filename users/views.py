@@ -1,5 +1,6 @@
 from sqlite3 import IntegrityError
 from rest_framework.parsers import JSONParser
+from rest_framework.parsers import MultiPartParser
 from rest_framework import generics, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
@@ -117,7 +118,7 @@ def add_patient(request):
     
 
 class CreatePatientView(generics.CreateAPIView):
-    parser_classes = [JSONParser]
+    parser_classes = [JSONParser,MultiPartParser]
     permission_classes = (IsStaff,)
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer

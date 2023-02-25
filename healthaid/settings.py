@@ -14,6 +14,7 @@ from pathlib import Path
 from datetime import timedelta
 from django.apps import AppConfig
 import os
+import boto3
 
 # class MyAppConfig(AppConfig):
 #     name = 'myapp'
@@ -61,6 +62,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'storages',
     'rest_framework',
     'rest_framework_simplejwt',
     'users',
@@ -100,18 +102,47 @@ WSGI_APPLICATION = 'healthaid.wsgi.application'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+     )
 }
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+# DATABASES = {
+
+#     'default': {
+
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+
+#         'NAME': 'HealthAid-V1',
+
+#         'USER': 'postgres',
+
+#         'PASSWORD': 'gaes5748',
+
+#         'HOST': 'localhost',
+
+#         'PORT': '5433',
+
+#     }
+
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'healthaid',
+        'USER': 'postgres',
+        'PASSWORD': 'HealthAidBackend',
+        'HOST': 'healthaid.c79u8okaqcyp.ap-south-1.rds.amazonaws.com',
+        'PORT': '5432',
     }
 }
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
@@ -187,3 +218,10 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AWS_ACCESS_KEY_ID = 'AKIAWERA57RANUVVEP7G'
+AWS_SECRET_ACCESS_KEY = 'TUdID+atMmEoW2+Ygs/uz5b8XNa7EbdmKKbF3rzm'
+AWS_STORAGE_BUCKET_NAME = 'patientpictures'
+AWS_S3_REGION_NAME = 'ap-south-1'  # Replace with the region you chose when creating the bucket
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_LOCATION = 'patient_pictures/'
