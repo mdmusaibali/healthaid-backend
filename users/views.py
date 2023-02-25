@@ -20,6 +20,7 @@ from .permissions import IsSuperAdmin, IsStaff
 # creating staff by superadmin
 class CreateStaffView(APIView):
     permission_classes = (IsSuperAdmin,)
+    parser_classes = [JSONParser]
 
     def post(self, request):
         name = request.data.get('name')
@@ -54,6 +55,8 @@ class StaffViewSet(viewsets.ModelViewSet):
 
 # staff login 
 class StaffLoginView(APIView):
+    parser_classes = [JSONParser]
+
 
     def post(self, request, format=None):
         email = request.data.get('email', None)
@@ -80,6 +83,7 @@ class StaffLoginView(APIView):
 # superadmin login view
 
 class SuperadminLoginView(APIView):
+    parser_classes = [JSONParser]
     def post(self, request, *args, **kwargs):
         email = request.data.get("email", "")
         password = request.data.get("password", "")
@@ -93,7 +97,9 @@ class SuperadminLoginView(APIView):
 
 # check whether the token is expired or not
 @api_view(['GET'])
+@JSONParser
 def check_token(request):
+    
     try:
         token = request.headers.get('Authorization').split(' ')[1]
         AccessToken(token)
@@ -103,6 +109,7 @@ def check_token(request):
     return Response({"message": "Token is valid"}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
+@JSONParser
 @permission_classes([IsAuthenticated, IsStaff])
 def add_patient(request):
     user_serializer = UserSerializer(data=request.data)
@@ -129,6 +136,7 @@ class CreatePatientView(generics.CreateAPIView):
 
 #  get all patients for staff
 @api_view(['GET'])
+@JSONParser
 @permission_classes([IsAuthenticated, IsStaff])
 def get_all_patients(request):
     if not request.user.is_staff:
@@ -141,6 +149,7 @@ def get_all_patients(request):
 
 # get all staff by superadmin
 @api_view(['GET'])
+@JSONParser
 @permission_classes([IsAuthenticated, IsSuperAdmin])
 def get_all_staff(request):
     if not request.user.is_superadmin:
@@ -152,6 +161,7 @@ def get_all_staff(request):
 
 # delete Staff by ID View
 @api_view(['DELETE'])
+@JSONParser
 @permission_classes([IsAuthenticated, IsSuperAdmin])
 def delete_staff(request, user_id):
     try:
@@ -166,6 +176,7 @@ def delete_staff(request, user_id):
 
 # delete patient by patient_id view
 @api_view(['DELETE'])
+@JSONParser
 @permission_classes([IsAuthenticated, IsStaff])
 def delete_patient(request, patient_id):
     if not request.user.is_staff:
