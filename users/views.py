@@ -161,7 +161,6 @@ def get_all_staff(request):
 
 # delete Staff by ID View
 @api_view(['DELETE'])
-
 @permission_classes([IsAuthenticated, IsSuperAdmin])
 def delete_staff(request, user_id):
     try:
@@ -169,10 +168,11 @@ def delete_staff(request, user_id):
     except Staff.DoesNotExist:
         return Response({"error": "Staff not found."}, status=status.HTTP_404_NOT_FOUND)
 
+    user = User.objects.get(id=user_id)
     staff.delete()
+    user.delete()
+
     return Response({"message": "Staff deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
-
-
 
 # delete patient by patient_id view
 @api_view(['DELETE'])
