@@ -135,10 +135,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'healthaid',
-        'USER': 'postgres',
-        'PASSWORD': 'HealthAidBackend',
-        'HOST': 'healthaid.c79u8okaqcyp.ap-south-1.rds.amazonaws.com',
-        'PORT': '5432',
+        'USER': os.environ['USER'],
+        'PASSWORD': os.environ['PASSWORD'],
+        'HOST': os.environ['HOST'],
+        'PORT': os.environ['PORT'],
     }
 }
 
