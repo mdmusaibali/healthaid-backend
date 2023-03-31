@@ -219,8 +219,8 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AWS_ACCESS_KEY_ID = 'AKIAWERA57RANUVVEP7G'
-AWS_SECRET_ACCESS_KEY = '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'
+AWS_ACCESS_KEY_ID = 'AKIAWERA57RAM6DSUJNO'
+AWS_SECRET_ACCESS_KEY = 'a+Idg5LlQdsr3WLOtViMglYGXeBCeqaMTKhZLbQm'
 AWS_STORAGE_BUCKET_NAME = 'patientpictures'
 AWS_S3_REGION_NAME = 'ap-south-1'  # Replace with the region you chose when creating the bucket
 AWS_S3_SIGNATURE_VERSION = 's3v4'
